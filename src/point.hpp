@@ -4,5 +4,5 @@ template <typename T>
 class Point {
     public:
         T x, y;
-        int grid_x, grid_y;
+        int grid_x, grid_y, grid_cell;
 };

@@ -13,6 +13,7 @@ class Cell{
     public:
         int line_x, line_y;
         std::vector<Point<T>> points;
+        std::vector<int> neighbors;
 };
 
 
