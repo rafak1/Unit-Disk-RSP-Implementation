@@ -1,4 +1,7 @@
 /mnt/c/Users/Rafal/Desktop/praca_roczna/CMakeFiles/rebuild_cache.dir
 /mnt/c/Users/Rafal/Desktop/praca_roczna/CMakeFiles/edit_cache.dir
-/mnt/c/Users/Rafal/Desktop/praca_roczna/internal_lib/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/Rafal/Desktop/praca_roczna/internal_lib/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Rafal/Desktop/praca_roczna/CMakeFiles/main.dir
+/mnt/c/Users/Rafal/Desktop/praca_roczna/cs/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/Rafal/Desktop/praca_roczna/cs/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Rafal/Desktop/praca_roczna/grid/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/Rafal/Desktop/praca_roczna/grid/CMakeFiles/edit_cache.dir

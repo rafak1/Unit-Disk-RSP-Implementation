@@ -39,7 +39,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/mnt/c/Users/Rafal/Desktop/praca_roczna/internal_lib/cmake_install.cmake")
+  include("/mnt/c/Users/Rafal/Desktop/praca_roczna/cs/cmake_install.cmake")
+  include("/mnt/c/Users/Rafal/Desktop/praca_roczna/grid/cmake_install.cmake")
 
 endif()
 

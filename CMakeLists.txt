@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.0)
+project(praca_roczna)
+include_directories( include src )
 add_subdirectory(src)
-#find_package (Threads REQUIRED) #find pthreads package
-#target_link_libraries (my_exe my_lib ${CMAKE_THREAD_LIBS_INIT}) #link against pthreads and my_lib
