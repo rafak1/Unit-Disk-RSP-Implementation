@@ -7,6 +7,3 @@ target_include_directories(alg_1 INTERFACE include)
 
 target_link_libraries(alg_1 INTERFACE grid)
 target_link_libraries(alg_1 INTERFACE cs)
-
-export(TARGETS alg_1 FILE gridConfig.cmake)
-export(TARGETS alg_1 FILE csConfig.cmake)
