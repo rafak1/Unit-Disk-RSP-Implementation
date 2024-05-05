@@ -1,14 +1,17 @@
 #include "grid/include/grid.hpp"
 #include "grid/include/point.hpp"
+#include "alg_1/include/alg_1.hpp"
 #include <vector>
 #include <algorithm>
 #include <numeric>
 #include "cs/include/cs.hpp"
+#include <iostream>
 
 #include <iostream>
 int main(){
     std::vector<Point<long double>> points = {
         Point<long double>{0, 0}, 
+        Point<long double>{0.1, 0.1}, 
         Point<long double>{-1, 1}, 
         Point<long double>{1, 1}, 
         Point<long double>{2, 2}, 
@@ -42,9 +45,30 @@ int main(){
     Points: 3 3
     Neighbors:*/
 
-    cs<long double> cs;
-    cs.solve(points, 1, 0, 4);
+    //auto res = cs.solve(points, 1, 0, 4, 1000);
+    alg_1<long double> alg;
+    long double res = alg.solve(points, 1000, 0, 4, 1000);
+    
+    std::cout<<" ANSWER: "<<res<<std::endl;
+
     return 0;
+
+
+    /*std::vector<Point<long double>> p = {
+        Point<long double>{0, -1}, 
+        Point<long double>{0, 0}, 
+        Point<long double>{1, -1.5}, 
+        Point<long double>{2, -1.3}, 
+        Point<long double>{3, -1.9},
+        Point<long double>{3, -2},
+        Point<long double>{4, -1.8},
+    };
+    cs<long double> cs;
+    std::vector<Point<long double>> res =  cs.graham_scan(p, 2);
+
+    for(auto p : res){
+        std::cout << p.x << " " << p.y << std::endl;
+    }*/
 }
 
 
