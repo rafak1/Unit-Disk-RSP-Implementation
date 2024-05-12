@@ -24,18 +24,26 @@ class alg_1 {
 template <typename T>
 T alg_1<T>::solve(std::vector<Point<T>> points, int lambda, T s_i, T t_i, int precision){
     cs<T> cs;
-    // Binary search on real numbers
+    // Binary search on real numbers O(log(r) + precision) * O(CS)
     T r = 1;
-    T last_r = 0;
-    for (int i = 0; i < precision; i++){
-        std::cout<<"AAAAAAAAAAAAAAAAAAAAAAAAAAAAA r: "<<r<<std::endl;
-        if (cs.solve(points, r, s_i, t_i, lambda)){
-            T temp = r;
-            r = (r + last_r) / 2;
-            last_r = temp;
+    T l = 0;
+
+    //compute r
+    while(!cs.solve(points, r, s_i, t_i, lambda)){
+        l = r;
+        r *= 2;
+    }
+
+    std::cout<<"AAAAAAAA start binary search for: "<<l<<" "<<r<<"\n";
+
+    //binary search
+    for(int i = 0; i < precision; i++){
+        T m = (l + r) / 2;
+        std::cout<<"AAAAAAAA binary search: "<<l<<" "<<r<<" "<<m<<"\n";
+        if(cs.solve(points, m, s_i, t_i, lambda)){
+            r = m;
         }else{
-            last_r = r;
-            r *= 2;
+            l = m;
         }
     }
 
