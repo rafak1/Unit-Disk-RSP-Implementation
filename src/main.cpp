@@ -44,10 +44,10 @@ int main(){
     Cell: 6 5
     Points: 3 3
     Neighbors:*/
-    cs<long double> cs;
-    auto res = cs.solve(points, 1, 0, 5, 1000);
-    //alg_1<long double> alg;
-    //long double res = alg.solve(points, 1000, 0, 5, 5);
+    //cs<long double> cs;
+    //auto res = cs.solve(points, 1, 0, 5, 1000);
+    alg_1<long double> alg;
+    long double res = alg.solve(points, 1000, 0, 5, 5);
     
     std::cout<<" ANSWER: "<<res<<std::endl;
 
