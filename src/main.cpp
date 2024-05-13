@@ -2,10 +2,11 @@
 #include "grid/include/point.hpp"
 #include "alg_1/include/alg_1.hpp"
 #include "brut/include/brut.hpp"
+#include "generator/include/generator.hpp"
+#include "cs/include/cs.hpp"
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include "cs/include/cs.hpp"
 #include <iostream>
 
 #include <iostream>
@@ -49,6 +50,18 @@ int main(){
     //auto res = cs.solve(points, 1, 0, 5, 1000);
     //alg_1<long double> alg;
     //long double res = alg.solve(points, 1000, 0, 5, 5);
+
+    generator<long double> gen;
+    dataset<long double> d = gen.generate_dataset(10, 0, 5, 100);
+
+    for(auto p : d.points){
+        std::cout << p.x << " " << p.y << std::endl;
+    }
+    std::cout << d.lambda << std::endl;
+    std::cout << d.s_i << std::endl;
+    std::cout << d.t_i << std::endl;
+
+
     brut<long double> brut;
     long double res = brut.solve(points, 100, 0, 5);
     
