@@ -1,6 +1,7 @@
 #include "grid/include/grid.hpp"
 #include "grid/include/point.hpp"
 #include "alg_1/include/alg_1.hpp"
+#include "brut/include/brut.hpp"
 #include <vector>
 #include <algorithm>
 #include <numeric>
@@ -46,14 +47,14 @@ int main(){
     Neighbors:*/
     //cs<long double> cs;
     //auto res = cs.solve(points, 1, 0, 5, 1000);
-    alg_1<long double> alg;
-    long double res = alg.solve(points, 1000, 0, 5, 5);
+    //alg_1<long double> alg;
+    //long double res = alg.solve(points, 1000, 0, 5, 5);
+    brut<long double> brut;
+    long double res = brut.solve(points, 1, 0, 5);
     
     std::cout<<" ANSWER: "<<res<<std::endl;
 
     return 0;
-
-
     /*std::vector<Point<long double>> p = {
         Point<long double>{0, -1}, 
         Point<long double>{0, 0}, 

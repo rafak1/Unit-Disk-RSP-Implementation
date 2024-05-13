@@ -6,10 +6,12 @@ option(BUILD_SHARED_LIBS ON)
 include_directories(grid)
 include_directories(cs)
 include_directories(alg_1)
+include_directories(brut)
 
 add_subdirectory(cs)
 add_subdirectory(grid)
 add_subdirectory(alg_1)
+add_subdirectory(brut)
 add_executable(main main.cpp)
 
 target_link_libraries( main
@@ -17,4 +19,5 @@ target_link_libraries( main
         grid
         cs
         alg_1
+        brut
 )
