@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <stack>
+#include <iostream>
 
 
 template <typename T>

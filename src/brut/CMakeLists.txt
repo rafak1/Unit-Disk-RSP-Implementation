@@ -5,4 +5,4 @@ add_library(brut INTERFACE)
 
 target_include_directories(brut INTERFACE include)
 
-export(TARGETS brut FILE brutConfig.cmake)
+target_link_libraries(brut INTERFACE grid)

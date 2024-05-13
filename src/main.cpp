@@ -50,7 +50,7 @@ int main(){
     //alg_1<long double> alg;
     //long double res = alg.solve(points, 1000, 0, 5, 5);
     brut<long double> brut;
-    long double res = brut.solve(points, 1, 0, 5);
+    long double res = brut.solve(points, 100, 0, 5);
     
     std::cout<<" ANSWER: "<<res<<std::endl;
 
