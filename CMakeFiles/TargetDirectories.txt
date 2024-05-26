@@ -7,3 +7,7 @@
 /mnt/c/Users/Rafal/Desktop/praca_roczna/grid/CMakeFiles/edit_cache.dir
 /mnt/c/Users/Rafal/Desktop/praca_roczna/alg_1/CMakeFiles/rebuild_cache.dir
 /mnt/c/Users/Rafal/Desktop/praca_roczna/alg_1/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Rafal/Desktop/praca_roczna/brut/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/Rafal/Desktop/praca_roczna/brut/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Rafal/Desktop/praca_roczna/generator/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/Rafal/Desktop/praca_roczna/generator/CMakeFiles/edit_cache.dir

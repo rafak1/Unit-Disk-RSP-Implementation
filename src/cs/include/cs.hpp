@@ -10,6 +10,7 @@ template <typename T>
 class cs{
     public:
         bool solve(std::vector<Point<T>> input_points, T r, int s_i, int t_i, int lambda);
+        bool solve(std::vector<Point<T>> input_points, std::vector<int> sorted_by_x, std::vector<int> sorted_by_y, T r, int s_i, int t_i, int lambda);
         std::vector<Point<T>> graham_scan(std::vector<Point<T>> &points, T r, T line, bool is_reverse, bool is_vertical);
 
     private:
@@ -37,7 +38,18 @@ bool cs<T>::solve(std::vector<Point<T>> input_points, T r, int s_i, int t_i, int
     });
 
     Grid<T> grid(sorted_by_x, sorted_by_y,input_points, input_points[s_i], r);
-    grid.print();
+    //grid.print();
+
+    return run_bfs(grid, input_points[s_i], input_points[t_i], r, lambda);
+}
+
+template <typename T>
+bool cs<T>::solve(std::vector<Point<T>> input_points, std::vector<int> sorted_by_x, std::vector<int> sorted_by_y, T r, int s_i, int t_i, int lambda){
+    if( r <= 0){
+        return false;
+    }
+    Grid<T> grid(sorted_by_x, sorted_by_y,input_points, input_points[s_i], r);
+    //grid.print();
 
     return run_bfs(grid, input_points[s_i], input_points[t_i], r, lambda);
 }
@@ -54,9 +66,9 @@ bool cs<T>::run_bfs(Grid<T> &grid, Point<T> &start, Point<T> &end, T r, int lamb
     S.push_back(start);
 
     for(int i = 0; i < lambda; i++){
-        std::cout<<"step\n";
-        if(do_step(grid, S, distance, r, end, i)){  //TODO LAMBDA PROBLEM
-            std::cout<<"found\n";
+        //std::cout<<"step\n";
+        if(do_step(grid, S, distance, r, end, i)){
+            //std::cout<<"found\n";
             return true;
         }else if(S.size() == 0){
             return false;
@@ -90,37 +102,34 @@ bool cs<T>::do_step(Grid<T> &grid, std::vector<Point<T>> &S, std::vector<std::ve
     for(int i = 0; i < S.size(); i++){
         Point<T> p = S[i];
         //std::cout<<"S point "<<p.x<<" "<<p.y<<"\n";
-        distance[p.grid_cell][p.grid_index] = step;
 
         bool should_add_cell = false;
+
         for(int i = 0; i < grid.cells[p.grid_cell].points.size(); i++){
 
             if(distance[p.grid_cell][i] == -1){
                 distance[p.grid_cell][i] = step+1;
                 new_S.push_back(grid.cells[p.grid_cell].points[i]);
-            }else if(distance[p.grid_cell][i] == step-1){ //second step conducted in this cell
-                distance[p.grid_cell][i] = -2;
+                //std::cout<<"pushing (same cell)"<<grid.cells[p.grid_cell].points[i].x<<" "<<grid.cells[p.grid_cell].points[i].y<<"\n";
+                should_add_cell = true;
+            }else if(distance[p.grid_cell][i] == step-1 || distance[p.grid_cell][i] == step){ //second step conducted in this cell
+                distance[p.grid_cell][i] = -step-2;
                 should_add_cell = true;
             }
         }
 
+        
         if(should_add_cell){
-            //should only fire if this is the second step conducted in this cell
-            step_cells.push_back(p.grid_cell);
-        }
-
-        //determine whether the cell was already added
-        bool should_add = true;
-        for(int i = 0; i < grid.cells[p.grid_cell].points.size(); i++){
-            if(distance[p.grid_cell][i] == step && p.grid_index != i){
-                should_add = false;
-                break;
-            }
-        }
-        if(should_add){
+            //std::cout<<"adding\n";
             step_cells.push_back(p.grid_cell);
         }
     }
+
+    /*std::cout<<"step cells\n";
+    for(int i = 0; i < step_cells.size(); i++){
+        std::cout<<step_cells[i]<<" | ";
+    }
+    std::cout<<"\n";*/
 
     //solve subproblem 1 (Decide whether the point should go into S_{i} or not)
     for(int i = 0; i < step_cells.size();i++){
@@ -130,11 +139,11 @@ bool cs<T>::do_step(Grid<T> &grid, std::vector<Point<T>> &S, std::vector<std::ve
         std::vector<Point<T>> C_points_by_y;
         for(int k = 0; k < C.points.size(); k++){
             //std::cout<<"C point "<<C.points[k].x<<" "<<C.points[k].y<<" "<<distance[C.points[k].grid_cell][C.points[k].grid_index]<<" "<<step<<"\n";
-            if(distance[C.points[k].grid_cell][C.points[k].grid_index] == step){
+            if(distance[C.points[k].grid_cell][C.points[k].grid_index] == -step-2){
                 C_points.push_back(C.points[k]);
             }
-            if(distance[C.points_by_y[k].grid_cell][C.points_by_y[k].grid_index] == step){
-                C_points_by_y.push_back(C.points[k]);
+            if(distance[C.points_by_y[k].grid_cell][C.points_by_y[k].grid_index] == -step-2){
+                C_points_by_y.push_back(C.points_by_y[k]);
             }
         }
 
@@ -148,27 +157,28 @@ bool cs<T>::do_step(Grid<T> &grid, std::vector<Point<T>> &S, std::vector<std::ve
         }
         std::cout<<"\n";*/
 
-       // std::cout<<"step cell "<<step_cells[i]<<"\n";
+        //std::cout<<"step cell "<<step_cells[i]<<"\n";
         for(int j = 0; j < grid.cells[step_cells[i]].neighbors.size(); j++){
             
             auto neighbor = grid.cells[grid.cells[step_cells[i]].neighbors[j]];
+            //std::cout<<"for neigbor "<<grid.cells[step_cells[i]].neighbors[j]<<" "<< grid.horizontal_lines[C.line_y].coordinate<<" "<< grid.vertical_lines[C.line_x].coordinate<<" "<<grid.grid_size<< "\n";
 
             //check the relative position of the neighbor
             if(neighbor.line_y > C.line_y){
                 //standard
-                solve_subproblem(C_points, neighbor.points, r, new_S, false,false, (grid.vertical_lines[C.line_x].coordinate) + grid.grid_size, distance);
+                solve_subproblem(C_points, neighbor.points, r, new_S, false,false, (grid.horizontal_lines[C.line_y].coordinate) + grid.grid_size, distance);
             }else if (neighbor.line_y == C.line_y){
-                //horizontal
+                //vertical
                 if(neighbor.line_x > C.line_x){
                     //right
-                    solve_subproblem(C_points_by_y, neighbor.points_by_y, r, new_S, false,true, (grid.horizontal_lines[C.line_y].coordinate) + grid.grid_size, distance);
+                    solve_subproblem(C_points_by_y, neighbor.points_by_y, r, new_S, false,true, (grid.vertical_lines[C.line_x].coordinate) + grid.grid_size, distance);
                 }else{
                     //left
                     std::vector<Point<T>> C_temp = C_points_by_y;
                     std::reverse(C_temp.begin(), C_temp.end());
                     std::vector<Point<T>> neighbor_temp = neighbor.points_by_y;
                     std::reverse(neighbor_temp.begin(), neighbor_temp.end());
-                    solve_subproblem(C_temp, neighbor_temp, r, new_S, true,true, (grid.horizontal_lines[C.line_y].coordinate), distance);
+                    solve_subproblem(C_temp, neighbor_temp, r, new_S, true,true, (grid.vertical_lines[C.line_x].coordinate), distance);
                 }
             }else{
                 //reverse
@@ -177,10 +187,15 @@ bool cs<T>::do_step(Grid<T> &grid, std::vector<Point<T>> &S, std::vector<std::ve
                 std::vector<Point<T>> neighbor_temp = neighbor.points;
                 std::reverse(neighbor_temp.begin(), neighbor_temp.end());
 
-                solve_subproblem(C_temp, neighbor_temp, r, new_S, true,false, (grid.vertical_lines[C.line_x].coordinate), distance);
+                solve_subproblem(C_temp, neighbor_temp, r, new_S, true,false, (grid.horizontal_lines[C.line_y].coordinate), distance);
             }
             
         }
+    }
+    
+    //set distances of new_S
+    for(int i = 0; i< new_S.size(); i++){
+        distance[new_S[i].grid_cell][new_S[i].grid_index] = step+1;
     }
 
     //check whether we hit the end
@@ -191,12 +206,13 @@ bool cs<T>::do_step(Grid<T> &grid, std::vector<Point<T>> &S, std::vector<std::ve
     }
 
 
-    std::cout<<"new_S\n";
+    /*std::cout<<"new_S\n";
     for(auto p : new_S){
         std::cout<<p.x<<" "<<p.y<<" | ";
     }
-    std::cout<<"\n";
+    std::cout<<"\n";*/
 
+    S.clear();
     S = new_S;
 
     return false;
@@ -251,7 +267,7 @@ void cs<T>::solve_subproblem(
             }
         }
 
-        //std::cout<<"point "<<C_prim_points[current_blue].x<<" "<<C_prim_points[current_blue].y<<" for envelope "<<graham[current_envelope].x<<" "<<graham[current_envelope].y<<"\n";
+        //std::cout<<"point "<<C_prim_points[current_blue].x<<" "<<C_prim_points[current_blue].y<<" for envelope "<<current_envelope<<" "<<graham[current_envelope].x<<" "<<graham[current_envelope].y<<"\n";
         if(C_prim_points[current_blue].euclidean_distance(graham[current_envelope]) <= r && 
             distance[C_prim_points[current_blue].grid_cell][C_prim_points[current_blue].grid_index] == -1){
             
@@ -301,6 +317,14 @@ std::vector<Point<T>> cs<T>::graham_scan(std::vector<Point<T>> &points, T r, T l
         //std::cout<<"i "<<i<<std::endl;
         while(true){
             if(!do_intersect(S.top(), points[i], r, line, is_reverse, is_vertical)){
+                Point<T> p = S.top();
+                S.pop();
+                if((!is_vertical && ((!is_reverse && p.y > points[i].y ) || (is_reverse && p.y < points[i].y))) ||
+                    (is_vertical && ((!is_reverse && p.x > points[i].x) || (is_reverse && p.x < points[i].x)))){
+                    S.push(p);
+                }else{
+                    S.push(points[i]);
+                }
                 break;
             }else{
                 if(S.size() <= 1){

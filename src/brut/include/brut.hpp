@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
-#include <stack>
+#include <queue>
 #include <iostream>
 
 
@@ -22,7 +22,7 @@ class brut{
         T solve(std::vector<Point<T>> points, int lambda, T s_i, T t_i);
 
     private:
-        T decision_algorithm(std::vector<Point<T>> points, int lambda, T r, T s_i, T t_i);
+        T decision_algorithm(std::vector<Point<T>> points, int lambda, T r, int s_i, int t_i);
 };
 
 
@@ -61,15 +61,15 @@ T brut<T>::solve(std::vector<Point<T>> points, int lambda, T s_i, T t_i){
 
 
 template <typename T>
-T brut<T>::decision_algorithm(std::vector<Point<T>> points, int lambda, T r, T s_i, T t_i){
+T brut<T>::decision_algorithm(std::vector<Point<T>> points, int lambda, T r, int s_i, int t_i){
 
     //construct graph
-    std::vector<std::vector<T>> graph(points.size(), std::vector<T>(points.size(), 0));
+    std::vector<std::vector<T>> graph(points.size(), std::vector<T>());
 
     for(int i = 0; i < points.size(); i++){
         for(int j = 0; j < points.size(); j++){
             if(i == j) continue;
-            T dist = sqrt(pow(points[i].x - points[j].x, 2) + pow(points[i].y - points[j].y, 2));
+            T dist = points[i].euclidean_distance(points[j]);
             if(dist <= r){
                 graph[i].push_back(j);
             }
@@ -79,16 +79,16 @@ T brut<T>::decision_algorithm(std::vector<Point<T>> points, int lambda, T r, T s
     //bfs
     std::vector<T> dist(points.size(), -1);
     dist[s_i] = 0;
-    std::stack<int> stack;
-    stack.push(s_i);
-    while(!stack.empty()){
-        int u = stack.top();
-        stack.pop();
+    std::queue<int> queue;
+    queue.push(s_i);
+    while(!queue.empty()){
+        int u = queue.front();
+        queue.pop();
         for(int i = 0; i < graph[u].size(); i++){
             int v = graph[u][i];
             if(dist[v] == -1){
                 dist[v] = dist[u] + 1;
-                stack.push(v);
+                queue.push(v);
             }
         }
     }

@@ -34,12 +34,12 @@ T alg_1<T>::solve(std::vector<Point<T>> points, int lambda, T s_i, T t_i, int pr
         r *= 2;
     }
 
-    std::cout<<"AAAAAAAA start binary search for: "<<l<<" "<<r<<"\n";
+    //std::cout<<"AAAAAAAA start binary search for: "<<l<<" "<<r<<"\n";
 
     //binary search
     for(int i = 0; i < precision; i++){
         T m = (l + r) / 2;
-        std::cout<<"AAAAAAAA binary search: "<<l<<" "<<r<<" "<<m<<"\n";
+        //std::cout<<"AAAAAAAA binary search: "<<l<<" "<<r<<" "<<m<<"\n";
         if(cs.solve(points, m, s_i, t_i, lambda)){
             r = m;
         }else{

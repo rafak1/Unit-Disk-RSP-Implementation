@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/c/Users/Rafal/Desktop/praca_roczna/src
+# Install script for directory: /mnt/c/Users/Rafal/Desktop/praca_roczna/src/brut
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -37,23 +37,3 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for each subdirectory.
-  include("/mnt/c/Users/Rafal/Desktop/praca_roczna/cs/cmake_install.cmake")
-  include("/mnt/c/Users/Rafal/Desktop/praca_roczna/grid/cmake_install.cmake")
-  include("/mnt/c/Users/Rafal/Desktop/praca_roczna/alg_1/cmake_install.cmake")
-  include("/mnt/c/Users/Rafal/Desktop/praca_roczna/brut/cmake_install.cmake")
-  include("/mnt/c/Users/Rafal/Desktop/praca_roczna/generator/cmake_install.cmake")
-
-endif()
-
-if(CMAKE_INSTALL_COMPONENT)
-  set(CMAKE_INSTALL_MANIFEST "install_manifest_${CMAKE_INSTALL_COMPONENT}.txt")
-else()
-  set(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
-endif()
-
-string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
-       "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/mnt/c/Users/Rafal/Desktop/praca_roczna/${CMAKE_INSTALL_MANIFEST}"
-     "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -33,8 +33,10 @@ template <typename T>
 dataset<T> generator<T>::generate_dataset(int n, T min, T max, int lambda){
     dataset<T> d;
     
+    std::random_device rd;
     std::uniform_real_distribution<T> unif(min, max);
-    std::default_random_engine re;
+    std::default_random_engine re(rd());
+    srand(time(NULL));
 
     for(int i = 0; i < n; i++){
         d.points.push_back(Point<T>{unif(re), unif(re)});

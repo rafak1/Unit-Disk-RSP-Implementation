@@ -51,6 +51,11 @@ class Grid {
         Grid(std::vector<int> &sorted_by_x, std::vector<int> &sorted_by_y,std::vector<Point<T>>& points, Point<T> &s, T r);
 
         /**
+         * @brief Plaseholder, any call to methods will result in undefined behavior
+         */
+        Grid(){}
+
+        /**
          * @brief prints important information about the grid on the standard output
          * 
          */
@@ -71,30 +76,28 @@ template <typename T>
 Grid<T>::Grid(std::vector<int> &sorted_by_x, std::vector<int> &sorted_by_y, std::vector<Point<T>>& points, Point<T> &s, T r){
 
     this->grid_size = r/sqrt((T)2);
-    std::cout<<"building grid with grid size: "<<this->grid_size<<std::endl;
+    //std::cout<<"building grid with grid size: "<<this->grid_size<<std::endl;
 
     this->vertical_lines = prepare_one_way_grid(sorted_by_x, points, s, r, 0);
-    for(int i = 0; i < this->vertical_lines.size(); i++){
+    /*for(int i = 0; i < this->vertical_lines.size(); i++){
         std::cout<<this->vertical_lines[i].coordinate<<" ";
     }
-    std::cout<<std::endl;
+    std::cout<<std::endl;*/
 
     this->horizontal_lines = prepare_one_way_grid(sorted_by_y, points, s, r, 1);
-    for(int i = 0; i < this->horizontal_lines.size(); i++){
+    /*for(int i = 0; i < this->horizontal_lines.size(); i++){
         std::cout<<this->horizontal_lines[i].coordinate<<" ";
     }
-    std::cout<<std::endl;
+    std::cout<<std::endl;*/
 
     this->assign_grid_to_points(sorted_by_x, sorted_by_y, points);
-    for(int i = 0; i < sorted_by_x.size(); i++){
+    /*for(int i = 0; i < sorted_by_x.size(); i++){
         std::cout<<points[sorted_by_x[i]].x<<" "<<points[sorted_by_x[i]].y<<" => "<<points[sorted_by_x[i]].grid_x<<" "<<points[sorted_by_x[i]].grid_y<<" | ";
     }
-    std::cout<<std::endl;
+    std::cout<<std::endl;*/
 
 
     this->compute_cells(sorted_by_x, sorted_by_y, points);
-
-    std::cout<<"end"<<std::endl;
 }
 
 //TODO redundant argument
@@ -116,9 +119,9 @@ void Grid<T>::compute_cells(std::vector<int> &sorted_by_x, std::vector<int> &sor
     //radix sort the cells to find duplicates
     radix_sort(points_cells_by_x, std::max(this->vertical_lines.size()+1, this->horizontal_lines.size()+1));
 
-    for(int i = 0; i < points_cells_by_x.size(); i++){
+    /*for(int i = 0; i < points_cells_by_x.size(); i++){
         std::cout<<points_cells_by_x[i].x<<" "<<points_cells_by_x[i].y<<" "<<points_cells_by_x[i].grid_x<<" "<<points_cells_by_x[i].grid_y<<std::endl;
-    }
+    }*/
 
     //remove duplicates and create lists of points for each cell
     for(int i = 0; i < points_cells_by_x.size(); i++){
@@ -140,6 +143,8 @@ void Grid<T>::compute_cells(std::vector<int> &sorted_by_x, std::vector<int> &sor
 
     //add points to cells sorted by y
     for(int i = 0; i < sorted_by_y.size(); i++){
+        if(points[sorted_by_y[i]].grid_x == -1 || points[sorted_by_y[i]].grid_y == -1)
+            continue;
         this->cells[points[sorted_by_y[i]].grid_cell].points_by_y.push_back(points[sorted_by_y[i]]);
         //std::cout<<"point "<<points[sorted_by_y[i]].x<<" "<<points[sorted_by_y[i]].y<<"was added to cell "<<points[sorted_by_y[i]].grid_cell<<std::endl;
     }
@@ -188,8 +193,15 @@ template <typename T>
 void Grid<T>::assign_grid_to_points(std::vector<int> &sorted_by_x, std::vector<int> &sorted_by_y, std::vector<Point<T>>& points){
 
     //assign vertical grid coordinates to points
+
+    int start = 0;
+    while(start < sorted_by_x.size() && points[sorted_by_x[start]].x < this->vertical_lines[0].coordinate){
+        points[sorted_by_x[start]].grid_x = -1;
+        start++;
+    }
+
     int current_line = 0;
-    for(int i = 0; i < sorted_by_x.size(); i++){
+    for(int i = start; i < sorted_by_x.size(); i++){
         while(current_line < this->vertical_lines.size()-1 && points[sorted_by_x[i]].x >= this->vertical_lines[current_line+1].coordinate){
             current_line++;
         }
@@ -198,12 +210,18 @@ void Grid<T>::assign_grid_to_points(std::vector<int> &sorted_by_x, std::vector<i
         }else{
             points[sorted_by_x[i]].grid_x = current_line;
         }
+    }   
+
+    start = 0;
+    while(start < sorted_by_y.size() && points[sorted_by_y[start]].y < this->horizontal_lines[0].coordinate){
+        points[sorted_by_y[start]].grid_y = -1;
+        start++;
     }
 
     //assign horizontal grid coordinates to points
     current_line = 0;
     //std::cout<<horizontal_lines[0].coordinate<<std::endl;
-    for(int i = 0; i < sorted_by_y.size(); i++){
+    for(int i = start; i < sorted_by_y.size(); i++){
         while(current_line < this->horizontal_lines.size()-1 && points[sorted_by_y[i]].y >= this->horizontal_lines[current_line+1].coordinate){
             current_line++;
         }
@@ -286,10 +304,10 @@ std::vector<Line<T>> Grid<T>::prepare_one_way_grid(std::vector<int>& i_points, s
         lines.push_back(Line<T>{current_line});
     }
 
-    for(int x = 0; x < lines.size(); x++){
+    /*for(int x = 0; x < lines.size(); x++){
         std::cout<<lines[x].coordinate<<" ";
     }
-    std::cout<<std::endl;
+    std::cout<<std::endl;*/
 
     return lines;
 }
