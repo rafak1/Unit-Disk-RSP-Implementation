@@ -12,15 +12,17 @@ class cs{
         bool solve(std::vector<Point<T>> input_points, T r, int s_i, int t_i, int lambda);
         bool solve(std::vector<Point<T>> input_points, std::vector<int> sorted_by_x, std::vector<int> sorted_by_y, T r, int s_i, int t_i, int lambda);
         std::vector<Point<T>> graham_scan(std::vector<Point<T>> &points, T r, T line, bool is_reverse, bool is_vertical);
+        Point<T> intersection_point(Point<T> &p1, Point<T> &p2, T r, bool is_reverse, bool is_vertical);
+        std::vector<int> get_step_cells(Grid<T> &grid, std::vector<Point<T>> &S, std::vector<std::vector<int>>& distance, std::vector<Point<T>>& new_S, int step);
+        bool do_step(Grid<T> &grid, std::vector<Point<T>> &S, std::vector<std::vector<int>>& distance, T r, Point<T> &end, int step, std::vector<int>& step_cells, std::vector<Point<T>>& new_S);
+        
 
     private:
         void prepare_distance(Grid<T> &grid, std::vector<std::vector<int>>& distance);
         bool run_bfs(Grid<T> &grid, Point<T> &start, Point<T> &end, T r, int lambda);
-        bool do_step(Grid<T> &grid, std::vector<Point<T>> &S, std::vector<std::vector<int>>& distance, T r, Point<T> &end, int step);
         void solve_subproblem(std::vector<Point<T>>& C_points, std::vector<Point<T>>& C_prim_points, T r, std::vector<Point<T>>& result, bool is_reverse, bool is_vertical, T line, std::vector<std::vector<int>>& distance);
 
         bool do_intersect(Point<T> &p1, Point<T> &p2, T r, T line, bool is_reverse, bool is_vertical);
-        Point<T> intersection_point(Point<T> &p1, Point<T> &p2, T r, bool is_reverse, bool is_vertical);
 };
 
 template <typename T>
@@ -67,7 +69,10 @@ bool cs<T>::run_bfs(Grid<T> &grid, Point<T> &start, Point<T> &end, T r, int lamb
 
     for(int i = 0; i < lambda; i++){
         //std::cout<<"step\n";
-        if(do_step(grid, S, distance, r, end, i)){
+        std::vector<Point<T>> new_S;
+        std::vector<int> step_cells = get_step_cells(grid, S, distance, new_S, i);
+        bool step = do_step(grid, S, distance, r, end, i, step_cells, new_S);
+        if(step){
             //std::cout<<"found\n";
             return true;
         }else if(S.size() == 0){
@@ -94,36 +99,32 @@ void cs<T>::prepare_distance(Grid<T> &grid, std::vector<std::vector<int>>& dista
 }
 
 template <typename T>
-bool cs<T>::do_step(Grid<T> &grid, std::vector<Point<T>> &S, std::vector<std::vector<int>>& distance, T r, Point<T> &end, int step){
-    std::vector<Point<T>> new_S;
+std::vector<int> cs<T>::get_step_cells(Grid<T> &grid, std::vector<Point<T>> &S, std::vector<std::vector<int>>& distance, std::vector<Point<T>>& new_S, int step){
+    //Save each cell that had a point in S_{i-1}, and add all other points from that cell to S_{i}
     std::vector<int> step_cells;
 
-    //And save each cell that had a point in S_{i-1}, and add all other points from that cell to S_{i}
     for(int i = 0; i < S.size(); i++){
         Point<T> p = S[i];
-        //std::cout<<"S point "<<p.x<<" "<<p.y<<"\n";
-
         bool should_add_cell = false;
-
         for(int i = 0; i < grid.cells[p.grid_cell].points.size(); i++){
-
             if(distance[p.grid_cell][i] == -1){
                 distance[p.grid_cell][i] = step+1;
                 new_S.push_back(grid.cells[p.grid_cell].points[i]);
-                //std::cout<<"pushing (same cell)"<<grid.cells[p.grid_cell].points[i].x<<" "<<grid.cells[p.grid_cell].points[i].y<<"\n";
                 should_add_cell = true;
             }else if(distance[p.grid_cell][i] == step-1 || distance[p.grid_cell][i] == step){ //second step conducted in this cell
                 distance[p.grid_cell][i] = -step-2;
                 should_add_cell = true;
             }
         }
-
-        
         if(should_add_cell){
-            //std::cout<<"adding\n";
             step_cells.push_back(p.grid_cell);
         }
     }
+    return step_cells;
+}
+
+template <typename T>
+bool cs<T>::do_step(Grid<T> &grid, std::vector<Point<T>> &S, std::vector<std::vector<int>>& distance, T r, Point<T> &end, int step, std::vector<int>& step_cells, std::vector<Point<T>>& new_S){
 
     /*std::cout<<"step cells\n";
     for(int i = 0; i < step_cells.size(); i++){

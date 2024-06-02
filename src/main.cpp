@@ -20,11 +20,14 @@ int main(){
         Point<long double>{2, 2}, 
         Point<long double>{3, 3},
         Point<long double>{2, 1}, 
-        Point<long double>{0, 1}
+        Point<long double>{0, 1},
+        Point<long double>{0.6, 0.4},
         };
 
     alg_2<long double> alg;
-    long double res = alg.solve(points, 10, 0, 5);
+    long double res = alg.solve(points, 10, 0, 4);
+
+    std::cout<<" ANSWER: "<<res<<std::endl;
     return 0;
 
    /*std::vector<Point<long double>> points = {
