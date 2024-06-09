@@ -19,7 +19,7 @@ class brut{
          * @param t_i index of the target point
          * @return T minimal radius of the circles, so that the shortest path between s_i and t_i is at most lambda
          */
-        T solve(std::vector<Point<T>> points, int lambda, T s_i, T t_i);
+        T solve(std::vector<Point<T>> points, int lambda, int s_i, int t_i);
 
     private:
         T decision_algorithm(std::vector<Point<T>> points, int lambda, T r, int s_i, int t_i);
@@ -28,7 +28,7 @@ class brut{
 
 
 template <typename T>
-T brut<T>::solve(std::vector<Point<T>> points, int lambda, T s_i, T t_i){
+T brut<T>::solve(std::vector<Point<T>> points, int lambda, int s_i, int t_i){
     
     //calculate all possible radii
     std::vector<T> possible_radii;
@@ -42,7 +42,6 @@ T brut<T>::solve(std::vector<Point<T>> points, int lambda, T s_i, T t_i){
 
     //sort radii
     std::sort(possible_radii.begin(), possible_radii.end());
-
 
     //binsearch
     int l = 0;
@@ -70,7 +69,7 @@ T brut<T>::decision_algorithm(std::vector<Point<T>> points, int lambda, T r, int
         for(int j = 0; j < points.size(); j++){
             if(i == j) continue;
             T dist = points[i].euclidean_distance(points[j]);
-            if(dist <= r){
+            if(dist <= r + 1e-9){
                 graph[i].push_back(j);
             }
         }

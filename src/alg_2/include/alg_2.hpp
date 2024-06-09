@@ -519,8 +519,7 @@ void alg_2<T>::build_grid(int s_i, int t_i, int lambda){
         }
     }
     
-    int m = input_points.size() - s_pos - 1;
-    
+    int m = input_points.size() - s_pos;
 
     T r_res = matrix_search(m,s_pos, s_i, t_i, lambda, false, true, sorted_by_x);
 
@@ -539,7 +538,7 @@ void alg_2<T>::build_grid(int s_i, int t_i, int lambda){
 
     shrink(l_res, r_res);
     
-    std::cout<<"RESULT after x :"<<interval_l<<" "<<interval_r<<std::endl;
+    //std::cout<<"RESULT after x :"<<interval_l<<" "<<interval_r<<std::endl;
 
     for(int i = 0; i < input_points.size(); i++){
         if(input_points[sorted_by_y[i]].x == s.x && input_points[sorted_by_y[i]].y == s.y){
@@ -547,7 +546,7 @@ void alg_2<T>::build_grid(int s_i, int t_i, int lambda){
             break;
         }
     }
-    m = input_points.size() - s_pos - 1;
+    m = input_points.size() - s_pos;
 
     r_res = matrix_search(m,s_pos, s_i, t_i, lambda, true, true, sorted_by_y);
 
@@ -566,7 +565,7 @@ void alg_2<T>::build_grid(int s_i, int t_i, int lambda){
 
     shrink(l_res, r_res);
     
-    std::cout<<"RESULT after y :"<<interval_l<<" "<<interval_r<<std::endl;
+    //std::cout<<"RESULT after y :"<<interval_l<<" "<<interval_r<<std::endl;
 
     std::cout<<"building the grid for r = "<<get_r()<<std::endl;
     grid = Grid<T>(sorted_by_x, sorted_by_y, input_points, s, get_r());
@@ -601,7 +600,6 @@ T alg_2<T>::matrix_search(int n, int s_pos, int s_i, int t_i, int lambda, bool i
         return -1;
     }
 
-
     //input matrix is of size n x 2n
     //padding so that the matrix is a power of 2
     int padding = 1;
@@ -609,19 +607,17 @@ T alg_2<T>::matrix_search(int n, int s_pos, int s_i, int t_i, int lambda, bool i
         padding *= 2;
     }
 
-    /*std::cout<<"pad: "<<padding<<" for m="<<n<<" spos="<<s_pos<<std::endl;
+    //std::cout<<"pad: "<<padding<<" for m="<<n<<" spos="<<s_pos<<std::endl;
 
     //print matrix
-    for(int j = 0; j < padding; j++){
-        for(int i=0;i<padding;i++){
+    /*for(int j = 0; j < padding; j++){
+        for(int i = 0; i < padding; i++){
             std::cout<<get_value(i,j,n,s_pos, padding, x_or_y, sorted)<<" ";
         }
         std::cout<<std::endl;
     }*/
-    
 
     active_cells.push_back(s_cell<T>{0,padding-1,padding-1,0});
-
 
     while(true){
         std::vector<std::pair<T, int>> bot_values;
@@ -632,7 +628,6 @@ T alg_2<T>::matrix_search(int n, int s_pos, int s_i, int t_i, int lambda, bool i
             bot_values.push_back(std::make_pair(get_value(active_cells[i].bot_x, active_cells[i].bot_y, n, s_pos, padding, x_or_y, sorted), i));
             top_values.push_back(std::make_pair(get_value(active_cells[i].top_x, active_cells[i].top_y, n, s_pos, padding, x_or_y, sorted), i));
         }
-
 
         //get the lower median of the bottom values
         nth_element(bot_values.begin(), bot_values.begin() + (int) ceil(((double) (bot_values.size()+1))/2) - 1, bot_values.end(), [](std::pair<T, int> a, std::pair<T, int> b){
@@ -735,6 +730,8 @@ T alg_2<T>::matrix_search(int n, int s_pos, int s_i, int t_i, int lambda, bool i
 
         if(new_new_cells.size() == 1 && new_new_cells[0].bot_x == new_new_cells[0].top_x && new_new_cells[0].bot_y == new_new_cells[0].top_y){
             return get_value(new_new_cells[0].bot_x, new_new_cells[0].bot_y, n, s_pos, padding, x_or_y, sorted);
+        }else if (new_new_cells.size() == 0){
+            return -1;
         }
 
         for(int i = 0; i < new_new_cells.size(); i++){

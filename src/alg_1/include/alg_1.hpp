@@ -16,13 +16,13 @@ class alg_1 {
          * @param precision Number of iterations
          * @return T The minimal radius of the circles, so that the shortest path between s_i and t_i is at most lambda
          */
-        T solve(std::vector<Point<T>> points, int lambda, T s_i, T t_i, int precision = 1000);
+        T solve(std::vector<Point<T>> points, int lambda, int s_i, int t_i, int precision = 1000);
 };
 
 
 
 template <typename T>
-T alg_1<T>::solve(std::vector<Point<T>> points, int lambda, T s_i, T t_i, int precision){
+T alg_1<T>::solve(std::vector<Point<T>> points, int lambda, int s_i, int t_i, int precision){
     cs<T> cs;
     // Binary search on real numbers O(log(r) + precision) * O(CS)
     T r = 1;

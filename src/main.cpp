@@ -5,6 +5,7 @@
 #include "brut/include/brut.hpp"
 #include "generator/include/generator.hpp"
 #include "cs/include/cs.hpp"
+#include "sort/include/sort.hpp"
 #include <vector>
 #include <algorithm>
 #include <numeric>
@@ -12,7 +13,7 @@
 
 #include <iostream>
 int main(){
-    std::vector<Point<long double>> points = {
+    /*std::vector<Point<long double>> points = {
         Point<long double>{0, 0}, 
         Point<long double>{0.1, 0.1}, 
         Point<long double>{-1, 1}, 
@@ -24,11 +25,36 @@ int main(){
         Point<long double>{0.6, 0.4},
         };
 
+    std::vector<int> sorted_by_x(points.size());
+    std::iota (std::begin(sorted_by_x), std::end(sorted_by_x), 0);
+    std::sort(sorted_by_x.begin(), sorted_by_x.end(), [points](int a, int b) { 
+        return points[a].x < points[b].x;
+    });
+
+    std::vector<int> sorted_by_y(points.size());
+    std::iota (std::begin(sorted_by_y), std::end(sorted_by_y), 0);
+    std::sort(sorted_by_y.begin(), sorted_by_y.end(), [points](int a, int b) { 
+        return points[a].y < points[b].y;
+    });
+
+    c_sort<long double> sort;
+    std::vector<c_point<long double>> points2 = {
+        c_point<long double>(1, 0, 0, false, false, std::pair<long double, long double>(5, 0), std::pair<long double, long double>(5.5, 0.1)),
+        c_point<long double>(1, 2, 2, false, false, std::pair<long double, long double>(2, 3), std::pair<long double, long double>(3, 4)),
+
+        //c_point<long double>(1, 0, 0, false, false, std::pair<long double, long double>(0.5, 0.1), std::pair<long double, long double>(1, 0.3))
+    };
+
+    std::pair<long double, long double> res2 = sort.sort(points2, sorted_by_x, sorted_by_y, points, 0, 4,10, 0);
+
+    std::cout<<" ANSWER: "<<res2.first<<" "<<res2.second<<std::endl;
+    return 0;
+
     alg_2<long double> alg;
     long double res = alg.solve(points, 10, 0, 4);
 
     std::cout<<" ANSWER: "<<res<<std::endl;
-    return 0;
+    return 0;*/
 
    /*std::vector<Point<long double>> points = {
         Point<long double>{0.101366, -5.86374}, 
@@ -72,26 +98,39 @@ int main(){
         Point<long double>{9.21043, -8.70884},
         Point<long double>{9.17925, -6.77818},
         Point<long double>{5.53497, -6.48097}
-        };
+        };*/
+    std::vector<Point<long double>> points = 
+    {
+        Point<long double>{0.685439, 8.53297},
+        Point<long double>{2.77813, 8.02297},
+        Point<long double>{8.26134, 8.34414},
+        Point<long double>{5.61606, 7.77911},
+        Point<long double>{9.14372, 7.94455}
+    };
 
-    cs<long double> cs;
-    long double res3 = cs.solve(points, 10, 2, 1, 7);
+
+    /*cs<long double> cs;
+    long double res3 = cs.solve(points, 1, 2, 0, 4);
     std::cout<<" ANSWER: "<<res3<<std::endl;
-    return 0;
+    return 0;*/
     brut<long double> brut2;
-    long double resa = brut2.solve(points, 4,2, 0);
+    long double resa = brut2.solve(points, 10, 1 , 2);
 
-    alg_1<long double> alg2;
-    long double resa2 = alg2.solve(points, 4,2, 0, 10);
+    alg_2<long double> alg2a;
+    long double resa2 = alg2a.solve(points, 10, 1, 2);
     std::cout<<" ANSWER: brut: "<<resa<<" algo: "<<resa2<<std::endl;
 
-    return 0;*/
+    return 0;
 
-    while(true){
+    //while(true){
 
         generator<long double> gen;
-        dataset<long double> d = gen.generate_dataset(10, -100, 100, 10);
+        dataset<long double> d = gen.generate_dataset(5, 0, 10, 10);
 
+        std::cout<<d.lambda<<" "<<d.s_i<<" "<<d.t_i<<std::endl;
+        for(auto p : d.points){
+            std::cout << p.x << " , " << p.y << std::endl;
+        }
 
         brut<long double> brut;
         long double res = brut.solve(d.points, d.lambda, d.s_i, d.t_i);
@@ -99,7 +138,10 @@ int main(){
         alg_1<long double> alg;
         long double res2 = alg.solve(d.points, d.lambda, d.s_i, d.t_i, 100);
 
-        if(res != res2){
+        alg_2<long double> alg2;
+        long double res3 = alg2.solve(d.points, d.lambda, d.s_i, d.t_i);
+        
+        /*if(res != res2){
             std::cout<<" ANSWER: brut: "<<res<<" algo: "<<res2<<std::endl;
             for(auto p : d.points){
                 std::cout << p.x << " " << p.y << std::endl;
@@ -109,9 +151,9 @@ int main(){
             std::cout << d.t_i << std::endl;
             break;
         }
-    }
+    }*/
     
-    //std::cout<<" ANSWER: brut: "<<res<<" algo: "<<res2<<std::endl;
+    std::cout<<" ANSWER: brut: "<<res<<" algo_1: "<<res2<<" algo_2: "<<res3<<std::endl;
 
     return 0;
 }

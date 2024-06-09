@@ -205,12 +205,12 @@ void Grid<T>::assign_grid_to_points(std::vector<int> &sorted_by_x, std::vector<i
         while(current_line < this->vertical_lines.size()-1 && points[sorted_by_x[i]].x >= this->vertical_lines[current_line+1].coordinate){
             current_line++;
         }
-        if(points[sorted_by_x[i]].x >= this->vertical_lines.back().coordinate){ //TODO +grid_size?
+        if(points[sorted_by_x[i]].x >= this->vertical_lines.back().coordinate){
             points[sorted_by_x[i]].grid_x = -1;
         }else{
             points[sorted_by_x[i]].grid_x = current_line;
         }
-    }   
+    }
 
     start = 0;
     while(start < sorted_by_y.size() && points[sorted_by_y[start]].y < this->horizontal_lines[0].coordinate){
