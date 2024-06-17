@@ -11,3 +11,7 @@ CMakeLists.txt.bak
 cs_algorithm
 libmy_lib.a
 main
+alg_1_solver
+alg_2_solver
+test_generator
+brut_solver
