@@ -15,3 +15,4 @@ alg_1_solver
 alg_2_solver
 test_generator
 brut_solver
+cmake_install.cmake
