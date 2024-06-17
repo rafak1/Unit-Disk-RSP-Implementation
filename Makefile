@@ -48,7 +48,7 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/c/Users/Rafal/Desktop/praca_roczna/src
+CMAKE_SOURCE_DIR = /mnt/c/Users/Rafal/Desktop/praca_roczna
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /mnt/c/Users/Rafal/Desktop/praca_roczna
@@ -111,6 +111,58 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named brut_solver
+
+# Build rule for target.
+brut_solver: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 brut_solver
+.PHONY : brut_solver
+
+# fast build rule for target.
+brut_solver/fast:
+	$(MAKE) -f CMakeFiles/brut_solver.dir/build.make CMakeFiles/brut_solver.dir/build
+.PHONY : brut_solver/fast
+
+#=============================================================================
+# Target rules for targets named alg_2_solver
+
+# Build rule for target.
+alg_2_solver: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 alg_2_solver
+.PHONY : alg_2_solver
+
+# fast build rule for target.
+alg_2_solver/fast:
+	$(MAKE) -f CMakeFiles/alg_2_solver.dir/build.make CMakeFiles/alg_2_solver.dir/build
+.PHONY : alg_2_solver/fast
+
+#=============================================================================
+# Target rules for targets named alg_1_solver
+
+# Build rule for target.
+alg_1_solver: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 alg_1_solver
+.PHONY : alg_1_solver
+
+# fast build rule for target.
+alg_1_solver/fast:
+	$(MAKE) -f CMakeFiles/alg_1_solver.dir/build.make CMakeFiles/alg_1_solver.dir/build
+.PHONY : alg_1_solver/fast
+
+#=============================================================================
+# Target rules for targets named test_generator
+
+# Build rule for target.
+test_generator: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_generator
+.PHONY : test_generator
+
+# fast build rule for target.
+test_generator/fast:
+	$(MAKE) -f CMakeFiles/test_generator.dir/build.make CMakeFiles/test_generator.dir/build
+.PHONY : test_generator/fast
+
+#=============================================================================
 # Target rules for targets named main
 
 # Build rule for target.
@@ -123,32 +175,68 @@ main/fast:
 	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
 .PHONY : main/fast
 
-main.o: main.cpp.o
+src/generator.o: src/generator.cpp.o
 
-.PHONY : main.o
+.PHONY : src/generator.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.o
-.PHONY : main.cpp.o
+src/generator.cpp.o:
+	$(MAKE) -f CMakeFiles/brut_solver.dir/build.make CMakeFiles/brut_solver.dir/src/generator.cpp.o
+	$(MAKE) -f CMakeFiles/alg_2_solver.dir/build.make CMakeFiles/alg_2_solver.dir/src/generator.cpp.o
+	$(MAKE) -f CMakeFiles/alg_1_solver.dir/build.make CMakeFiles/alg_1_solver.dir/src/generator.cpp.o
+	$(MAKE) -f CMakeFiles/test_generator.dir/build.make CMakeFiles/test_generator.dir/src/generator.cpp.o
+.PHONY : src/generator.cpp.o
 
-main.i: main.cpp.i
+src/generator.i: src/generator.cpp.i
 
-.PHONY : main.i
+.PHONY : src/generator.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.i
-.PHONY : main.cpp.i
+src/generator.cpp.i:
+	$(MAKE) -f CMakeFiles/brut_solver.dir/build.make CMakeFiles/brut_solver.dir/src/generator.cpp.i
+	$(MAKE) -f CMakeFiles/alg_2_solver.dir/build.make CMakeFiles/alg_2_solver.dir/src/generator.cpp.i
+	$(MAKE) -f CMakeFiles/alg_1_solver.dir/build.make CMakeFiles/alg_1_solver.dir/src/generator.cpp.i
+	$(MAKE) -f CMakeFiles/test_generator.dir/build.make CMakeFiles/test_generator.dir/src/generator.cpp.i
+.PHONY : src/generator.cpp.i
 
-main.s: main.cpp.s
+src/generator.s: src/generator.cpp.s
 
-.PHONY : main.s
+.PHONY : src/generator.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.s
-.PHONY : main.cpp.s
+src/generator.cpp.s:
+	$(MAKE) -f CMakeFiles/brut_solver.dir/build.make CMakeFiles/brut_solver.dir/src/generator.cpp.s
+	$(MAKE) -f CMakeFiles/alg_2_solver.dir/build.make CMakeFiles/alg_2_solver.dir/src/generator.cpp.s
+	$(MAKE) -f CMakeFiles/alg_1_solver.dir/build.make CMakeFiles/alg_1_solver.dir/src/generator.cpp.s
+	$(MAKE) -f CMakeFiles/test_generator.dir/build.make CMakeFiles/test_generator.dir/src/generator.cpp.s
+.PHONY : src/generator.cpp.s
+
+src/main.o: src/main.cpp.o
+
+.PHONY : src/main.o
+
+# target to build an object file
+src/main.cpp.o:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
+
+src/main.i: src/main.cpp.i
+
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 # Help Target
 help:
@@ -158,10 +246,17 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... brut_solver"
+	@echo "... alg_2_solver"
+	@echo "... alg_1_solver"
+	@echo "... test_generator"
 	@echo "... main"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... src/generator.o"
+	@echo "... src/generator.i"
+	@echo "... src/generator.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 .PHONY : help
 
 

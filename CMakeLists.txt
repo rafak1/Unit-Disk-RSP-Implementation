@@ -64,6 +64,37 @@ target_link_libraries( main
         generator
 )
 
+add_executable(test_generator src/generator.cpp)
+
+target_link_libraries( test_generator
+    INTERFACE 
+        generator
+)
+
+add_executable(alg_1_solver src/generator.cpp)
+
+target_link_libraries( alg_1_solver
+    INTERFACE 
+        alg_1
+        grid
+)
+
+add_executable(alg_2_solver src/generator.cpp)
+
+target_link_libraries( alg_2_solver
+    INTERFACE 
+        alg_2
+        grid
+)
+
+add_executable(brut_solver src/generator.cpp)
+
+target_link_libraries( brut_solver
+    INTERFACE 
+        brut
+        grid
+)
+
 target_link_libraries(main PRIVATE CGAL::CGAL )
 
 
