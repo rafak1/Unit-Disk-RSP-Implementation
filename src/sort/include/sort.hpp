@@ -34,6 +34,36 @@ class c_point{
 };
 
 template <typename T>
+class Comparision{
+    public:
+        c_point<T> a;
+        c_point<T> b;
+        bool result;
+        T root;
+        bool direction;
+        int weight;
+};
+
+template <typename T>
+class node{
+    public:
+        c_point<T> point;
+        node<T> *left = nullptr;
+        node<T> *right = nullptr;
+
+        void delete_tree(){
+            if(left != nullptr){
+                left->delete_tree();
+                delete left;
+            }
+            if(right != nullptr){
+                right->delete_tree();
+                delete right;
+            }
+        }
+};
+
+template <typename T>
 class c_sort{
     public:
         T interval_l;
@@ -49,17 +79,8 @@ class c_sort{
             return interval_l + (interval_r - interval_l) / 2;
         }
         std::pair<bool, T> c_sort<T>::resolve(c_point<T> &a, c_point<T> &b, int x_or_y);
-};
-
-template <typename T>
-class Comparision{
-    public:
-        c_point<T> a;
-        c_point<T> b;
-        bool result;
-        T root;
-        bool direction;
-        int weight;
+        Comparision <T> weighted_median(std::vector<Comparision<T>*> comparisions, T total_weight);
+        node<T>* c_sort<T>::create_bst(std::vector<c_point<T>> &pivots, int l, int r);
 };
 
 
@@ -94,9 +115,9 @@ std::pair<T,T> c_sort<T>::sort(
     int sqrt_n = sqrt(n);
 
 
-    std::vector<Comparision<T>> comparisions;
 
     while(true){
+        std::vector<Comparision<T>> comparisions;
         
         T initial_weigth = w;
 
@@ -119,17 +140,62 @@ std::pair<T,T> c_sort<T>::sort(
                 comparisions.push_back(comp);
             }
         }
+        std::vector<Comparision<T>*> active_comparisions;
+        for(int i=0;i<comparisions.size();i++){
+            std::pair<bool, T> comp_res = resolve(comparisions[i].a, comparisions[i].b, x_or_y);
+            if(comp_res.second == -1){
+                comparisions[i].result = comp_res.first;
+            }else{
+                active_comparisions.push_back(&comparisions[i]);
+            }
+        }
 
         //resolve the comparisions
-        int i = 0;
-        int j = comparisions.size();
-        while(i < j){
+        while(!active_comparisions.empty()){
             
             //select a weghted median comparision
-            
+            Comparision<T> comp = weighted_median(comparisions, initial_weigth);
 
+            //resolve the comparision
+            std::pair<bool, T> comp_res = resolve(comp.a, comp.b, x_or_y);
 
+            bool res = cs.solve(og_points, og_by_x, og_by_y, comp_res.second, s_i, t_i, lambda);
 
+            if(res){
+                interval_r = std::min(interval_r, comp_res.second);
+            }else{
+                interval_l = std::max(interval_l, comp_res.second);
+            }
+
+            std::vector<Comparision<T>> new_comparisions;
+            for(auto c : active_comparisions){
+                if(res){
+                    if(c->root < comp_res.second)
+                        new_comparisions.push_back(c);
+                    else{
+                        c->result = true;
+                        if(comp_res.first){
+                            c->result = true;
+                        }else{
+                            c->result = false;
+                        }
+                    }
+
+                }else{
+                    if(c->root > comp_res.second)
+                        new_comparisions.push_back(c);
+                    else{
+                        std::pair<bool, T> comp_res = resolve(c->a, c->b, x_or_y);
+                        if(comp_res.first){
+                            c->result = true;
+                        }else{
+                            c->result = false;
+                        }
+                    }
+                }
+            }
+
+            active_comparisions = new_comparisions;
         }
 
 
@@ -143,16 +209,36 @@ std::pair<T,T> c_sort<T>::sort(
             }
         }
 
+        comparisions.clear();
+
         //create a bst tree with the sorted points
-
-
-
-
-
+        node<T> *root = create_bst(points, 0, n - 1);
 
         //route the rest of the points through the tree
+        for(int i = 0; i < points.size(); i++){
+            if(points[i].is_marked){
+                continue;
+            }
+            Comparision<T> comp;
+            comp.a = points[i];
+            comp.b = root->point;
+            comp.weight = initial_weigth;
+            comparisions.push_back(comp);
+        }
         
+        while(!comparisions.empty()){
+            
+        }
 
+
+
+        //clean up
+        for(int i = 0; i < n; i++){
+            if(points[i].is_marked){
+                points[i].is_marked = false;
+            }
+        }
+        root->delete_tree();
 
     }
 
@@ -223,9 +309,25 @@ std::pair<T,T> c_sort<T>::brut_sort(
     return {interval_l, interval_r};
 }
 
+
 template <typename T>
-std::pair<bool, T> c_sort<T>::resolve(
-    c_point<T> &a, c_point<T> &b, int x_or_y){
+node<T>* c_sort<T>::create_bst(std::vector<c_point<T>> &pivots, int l, int r){
+    if(l > r){
+        return nullptr;
+    }
+
+    int m = l + (r - l) / 2;
+
+    node<T> *root = new node<T>;
+    root->point = pivots[m];
+    root->left = create_bst(comparisions, l, m - 1);
+    root->right = create_bst(comparisions, m + 1, r);
+
+    return root;
+}
+
+template <typename T>
+std::pair<bool, T> c_sort<T>::resolve(c_point<T> &a, c_point<T> &b, int x_or_y){
 
     int other = x_or_y == 0 ? 1 : 0; 
 
@@ -412,5 +514,53 @@ std::pair<T,bool> c_sort<T>::get_root(c_point<T> &a_point, c_point<T> &b_point, 
     }else{
         //two envelope vertices in the same instance
         return {-2, false};
+    }
+}
+
+template< typename T>
+Comparision <T> c_sort<T>::weighted_median(std::vector<Comparision<T>*> comparisions, T total_weight){
+    if(comparisions.size() == 1){
+        return comparisions[0];
+    }else if(comparisions.size() == 2){
+        if (comparisions[0]->weight > comparisions[1]->weight){
+            return comparisions[0];
+        }else{
+            return comparisions[1];
+        }
+    }
+    
+    //find the lower median
+    std::nth_element(comparisions.begin(), comparisions.begin() + comparisions.size() / 2, comparisions.end(), [&](Comparision<T>* a, Comparision<T>* b){
+        return a->root < b->root;
+    });
+
+    T median = comparisions[comparisions.size() / 2]->weight;
+    T median_root = comparisions[comparisions.size() / 2]->root;
+
+    //partiton around the median
+    std::partition(comparisions.begin(), comparisions.end(), [&](Comparision<T>* a){
+        return a->root < median_root;
+    });
+
+    T sum_low = std::accumulate(comparisions.begin(), comparisions.begin() + comparisions.size() / 2, 0, [&](T sum, Comparision<T>* a){
+        return sum + a->weight;
+    });
+
+    T sum_high = std::accumulate(comparisions.begin() + comparisions.size() / 2, comparisions.end(), 0, [&](T sum, Comparision<T>* a){
+        return sum + a->weight;
+    });
+
+    if(sum_low < total_weight / 2 && sum_high < total_weight / 2){
+        return &comparisions[comparisions.size() / 2];
+    }else{
+        if(sum_low >= total_weight / 2){
+            comparisions[comparisions.size() / 2]->weight += sum_low;
+            std::vector<Comparision<T>> new_comparisions(comparisions.begin(), comparisions.begin() + comparisions.size() / 2);
+            return weighted_median(comparisions, total_weight);
+        }else{
+            comparisions[comparisions.size() / 2].weight += sum_high;
+            std::vector<Comparision<T>> new_comparisions(comparisions.begin() + comparisions.size() / 2, comparisions.end());
+            return weighted_median(comparisions, total_weight);
+        }
     }
 }

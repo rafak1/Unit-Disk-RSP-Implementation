@@ -3,6 +3,8 @@ project(cs_algorithm)
 
 option(BUILD_SHARED_LIBS ON)
 
+set(CMAKE_BUILD_TYPE "Release")
+
 # CGAL and its components
 find_package( CGAL QUIET COMPONENTS  )
 

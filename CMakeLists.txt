@@ -5,6 +5,9 @@ cmake_minimum_required(VERSION 3.1...3.15)
 
 project( praca_roczna )
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_BUILD_TYPE "Release")
+
 
 # CGAL and its components
 find_package( CGAL QUIET COMPONENTS  )
@@ -36,10 +39,31 @@ endif()
 # Creating entries for target: praca_roczna
 # ############################
 
-add_executable(praca_roczna)
-
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS praca_roczna )
 
-# Link the executable to CGAL and third-party libraries
-target_link_libraries(praca_roczna PRIVATE CGAL::CGAL )
+include_directories(src/grid)
+include_directories(src/cs)
+include_directories(src/alg_1)
+include_directories(src/brut)
+include_directories(src/generator)
+
+add_subdirectory(src/cs)
+add_subdirectory(src/grid)
+add_subdirectory(src/alg_1)
+add_subdirectory(src/brut)
+add_subdirectory(src/generator)
+
+add_executable(main src/main.cpp)
+
+target_link_libraries( main
+    INTERFACE 
+        grid
+        cs
+        alg_1
+        brut
+        generator
+)
+
+target_link_libraries(main PRIVATE CGAL::CGAL )
+
 
