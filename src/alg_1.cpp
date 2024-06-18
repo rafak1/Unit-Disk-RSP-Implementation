@@ -1,5 +1,5 @@
 #include "grid/include/point.hpp"
-#include "alg_2/include/alg_2.hpp"
+#include "alg_1/include/alg_1.hpp"
 #include <iostream>
 
 int PRECISION = 1000;

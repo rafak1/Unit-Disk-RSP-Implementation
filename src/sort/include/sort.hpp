@@ -35,29 +35,12 @@ class c_point{
 };
 
 template <typename T>
-class Comparision{
-    public:
-        c_point<T> a;
-        c_point<T> b;
-        bool result;
-        T root;
-        bool direction;
-        int weight;
-};
-
-template <typename T>
-class Instnace{
-    public:
-        std::vector<c_point<T>> points;
-        T initial_weight;
-};
-
-template <typename T>
 class node{
     public:
         c_point<T> point;
         node<T> *left = nullptr;
         node<T> *right = nullptr;
+        int index;
 
         void delete_tree(){
             if(left != nullptr){
@@ -69,6 +52,26 @@ class node{
                 delete right;
             }
         }
+};
+
+template <typename T>
+class Comparision{
+    public:
+        c_point<T> a;
+        c_point<T> b;
+        bool result;
+        T root;
+        bool direction;
+        int weight;
+        int instance;
+        node<T> *c_node = nullptr;
+};
+
+template <typename T>
+class Instnace{
+    public:
+        std::vector<c_point<T>> points;
+        T initial_weight;
 };
 
 template <typename T>
@@ -89,6 +92,7 @@ class c_sort{
         std::pair<bool, T> resolve(c_point<T> &a, c_point<T> &b, int x_or_y);
         Comparision <T> weighted_median(std::vector<Comparision<T>> comparisions, T total_weight);
         node<T>* create_bst(std::vector<c_point<T>> &pivots, int l, int r);
+        void move_comp(    bool first, Comparision<T> &comp,std::vector<Comparision<T>> &comparisions, std::vector<Comparision<T>*> &active_comparisions,std::vector<std::vector<std::vector<c_point<T>>>> &buckets,  int instance_i, int x_or_y);
 };
 
 
@@ -121,10 +125,11 @@ std::pair<T,T> c_sort<T>::sort(
     cs<T> cs;
 
     int n = points.size();
-    int sqrt_n = sqrt(n);
 
     std::vector<Instnace<T>> instances;
     instances.push_back(Instnace<T>{points, w});
+
+    std::cout<<"SORTING"<<std::endl;
 
     while(true){
         std::vector< std::vector<Comparision<T>> > comparisions;
@@ -134,7 +139,10 @@ std::pair<T,T> c_sort<T>::sort(
 
         int instance_i = 0;
         for(auto &instance : instances){
+            int sqrt_n = sqrt(instance.points.size());
             std::vector<c_point<T>> pivots;
+
+            std::cout<<"instance "<<instance_i<<std::endl;
             
             //randomly select sqrt(n) points
             std::random_shuffle(instance.points.begin(), instance.points.end());
@@ -143,17 +151,22 @@ std::pair<T,T> c_sort<T>::sort(
                 pivots.push_back(instance.points[i]);
             }
 
+            std::cout<<"pivots "<<pivots.size()<<std::endl;
+
             //create comparisions for sorting the marked points
             for(int i = 0; i < sqrt_n; i++){
                 for(int j = 0; j < sqrt_n; j++){
                     Comparision<T> comp;
-                    comp.a = instance.pivots[i];
-                    comp.b = instance.pivots[j];
-                    comp.weight = instance.initial_weigth;
+                    comp.a = instance.points[i];
+                    comp.b = instance.points[j];
+                    comp.weight = instance.initial_weight;
                     comparisions[instance_i].push_back(comp);
                 }
             }
-            for(int i=0;i<comparisions.size();i++){
+
+            //std::cout<<"comparisions "<<comparisions[instance_i].size()<<std::endl;
+
+            for(int i=0;i<comparisions[instance_i].size();i++){
                 std::pair<bool, T> comp_res = resolve(comparisions[instance_i][i].a, comparisions[instance_i][i].b, x_or_y);
                 if(comp_res.second == -1){
                     comparisions[instance_i][i].result = comp_res.first;
@@ -161,11 +174,16 @@ std::pair<T,T> c_sort<T>::sort(
                     active_comparisions.push_back(&comparisions[instance_i][i]);
                 }
             }
+
+            //std::cout<<"active_comparisions "<<active_comparisions.size()<<std::endl;
+            
             instance_i++;
         }
 
         //resolve the comparisions
         while(!active_comparisions.empty()){
+
+            //std::cout<<"active_comparisions "<<active_comparisions.size()<<std::endl;
 
             T total_weight = 0;
             for(auto c : active_comparisions){
@@ -197,11 +215,7 @@ std::pair<T,T> c_sort<T>::sort(
                         new_comparisions.push_back(c);
                     else{
                         std::pair<bool, T> comp_res_int = resolve(c->a, c->b, x_or_y);
-                        if(comp_res_int.first){
-                            c->result = true;
-                        }else{
-                            c->result = false;
-                        }
+                        c->result = comp_res_int.first;
                     }
 
                 }else{
@@ -209,11 +223,7 @@ std::pair<T,T> c_sort<T>::sort(
                         new_comparisions.push_back(c);
                     else{
                         std::pair<bool, T> comp_res_int = resolve(c->a, c->b, x_or_y);
-                        if(comp_res_int.first){
-                            c->result = true;
-                        }else{
-                            c->result = false;
-                        }
+                        c->result = comp_res_int.first;
                     }
                 }
             }
@@ -224,10 +234,11 @@ std::pair<T,T> c_sort<T>::sort(
 
         //bubble sort but now with solved comparisions
         for(int inst = 0; inst < instances.size(); inst++){
+            int sqrt_n = sqrt(instances[inst].points.size());
             for(int i = 0; i < sqrt_n; i++){
                 for(int j = 0; j < sqrt_n; j++){
                     int ind = i * sqrt_n + j;
-                    if(comparisions[inst][ind].result){
+                    if(ind < comparisions[inst].size() && comparisions[inst][ind].result){
                         std::swap(instances[inst].points[i], instances[inst].points[j]);
                     }
                 }
@@ -235,33 +246,50 @@ std::pair<T,T> c_sort<T>::sort(
         }
 
         for(int i=0;i<instances.size();i++){
-            comparisions.clear();
+            comparisions[i].clear();
         }
         active_comparisions.clear();
 
+        std::cout<<"bst"<<std::endl;
+
         //create a bst tree with the sorted points
         std::vector<node<T>*> roots;
-        for(auto instance : instances){
+        for(auto &instance : instances){
+            int sqrt_n = sqrt(instance.points.size());
             node<T> *root = create_bst(instance.points, 0, sqrt_n - 1);
             roots.push_back(root);
         }
 
+        std::cout<<"bst done"<<std::endl;
+
+        
+        std::vector<std::vector<std::vector<c_point<T>>>> buckets;
+        buckets.resize(instances.size(), std::vector<std::vector<c_point<T>>>());
+        for(int i = 0; i < instances.size(); i++){
+            int sqrt_n = sqrt(instances[i].points.size());
+            buckets[i].resize(sqrt_n+2, std::vector<c_point<T>>());
+        }
+
         //route the rest of the points through the tree
         instance_i = 0;
-        for(auto instance& : instances){
-            for(int i = 0; i < points.size(); i++){
+        for(auto &instance : instances){
+            for(int i = 0; i < instance.points.size(); i++){
                 if(instance.points[i].is_marked){
                     continue;
                 }
                 Comparision<T> comp;
-                comp.a = points[i];
+                comp.a = instance.points[i];
                 comp.b = roots[instance_i]->point;
-                comp.weight = 0;//TODOTODO ??? ?????????????
-                comparisions.push_back(comp);
-                active_comparisions.push_back(&comparisions.back());
+                comp.c_node = roots[instance_i];
+                comp.weight = instance.initial_weight / ( 2 * pow((long double)instance.points.size(), 2));
+                comp.instance = instance_i;
+
+                move_comp(true, comp, comparisions[instance_i], active_comparisions, buckets, instance_i, x_or_y);
             }
             instance_i++;
         }
+
+        std::cout<<"routing start done"<<std::endl;
         
         while(!active_comparisions.empty()){
             
@@ -291,25 +319,73 @@ std::pair<T,T> c_sort<T>::sort(
             std::vector<Comparision<T> *> new_comparisions;
             for(auto c : active_comparisions){
                 if(res){
-                    if(c->root < comp_res.second)
+                    if(c->root < comp_res.second){
                         new_comparisions.push_back(c);
-                    else{
+                    }else{
                         c->result = true;
                         if(comp_res.first){
-                            c->result = true;
+                            if(c->c_node->right != nullptr){
+                                Comparision<T> comp;
+                                comp.a = c->a;
+                                comp.b = c->c_node->right->point;
+                                comp.c_node = c->c_node->right;
+                                comp.weight = c->weight / 2;
+                                comp.instance = c->instance;
+                                new_comparisions.push_back(&comp);
+                            }else{
+                                buckets[c->instance][c->c_node->index].push_back(c->a);
+                            }
                         }else{
-                            c->result = false;
+                            if(c->c_node->left != nullptr){
+                                Comparision<T> comp;
+                                comp.a = c->a;
+                                comp.b = c->c_node->left->point;
+                                comp.c_node = c->c_node->left;
+                                comp.weight = c->weight / 2;
+                                comp.instance = c->instance;
+                                new_comparisions.push_back(&comp);
+                            }else{
+                                int index = c->c_node->index - 1;
+                                index = index < 0 ? 0 : index;
+                                buckets[c->instance][index].push_back(c->a);
+                            }
                         }
                     }
                 }else{
-                    if(c->root > comp_res.second)
+                    if(c->root > comp_res.second){
                         new_comparisions.push_back(c);
-                    else{
+                    }else{
                         std::pair<bool, T> comp_res = resolve(c->a, c->b, x_or_y);
                         if(comp_res.first){
-                            c->result = true;
+                            if(c->c_node->left != nullptr){
+                                Comparision<T> comp;
+                                comp.a = c->a;
+                                comp.b = c->c_node->left->point;
+                                comp.c_node = c->c_node->left;
+                                comp.weight = c->weight / 2;
+                                comp.instance = c->instance;
+                                new_comparisions.push_back(&comp);
+
+                                move_comp(false, comp, comparisions[c->instance], active_comparisions, buckets, c->instance, x_or_y);
+
+                            }else{
+                                buckets[c->instance][c->c_node->index-1].push_back(c->a);
+                            }
                         }else{
-                            c->result = false;
+                            if(c->c_node->right != nullptr){
+                                Comparision<T> comp;
+                                comp.a = c->a;
+                                comp.b = c->c_node->right->point;
+                                comp.c_node = c->c_node->right;
+                                comp.weight = c->weight / 2;
+                                comp.instance = c->instance;
+                                new_comparisions.push_back(&comp);
+
+                                move_comp(true, comp, comparisions[c->instance], active_comparisions, buckets, c->instance, x_or_y);
+
+                            }else{
+                                buckets[c->instance][c->c_node->index].push_back(c->a);
+                            }
                         }
                     }
                 }
@@ -317,6 +393,25 @@ std::pair<T,T> c_sort<T>::sort(
             active_comparisions = new_comparisions;
         }
 
+        std::cout<<"routing done"<<std::endl;
+
+        //recurse into subproblems
+        std::vector<Instnace<T>> new_instances;
+        for(int i = 0; i < instances.size(); i++){
+            int sqrt_n = sqrt(instances[i].points.size());
+            for(int j = 0; j <= sqrt_n; j++){
+                if(buckets[i][j].size() > 1){
+                    Instnace<T> new_instance;
+                    new_instance.points = buckets[i][j];
+                    new_instance.initial_weight = instances[i].initial_weight / ( 4 * pow((long double)new_instance.points.size(), 4.5));
+                    new_instances.push_back(new_instance);
+                }
+            }
+        }
+
+        instances = new_instances;
+
+        std::cout<<"new instances "<<instances.size()<<std::endl;
 
 
         //clean up
@@ -326,20 +421,27 @@ std::pair<T,T> c_sort<T>::sort(
             }
         }
         for(int i = 0; i < instances.size(); i++){
+            int sqrt_n = sqrt(instances[i].points.size());
             for(int j = 0; j < sqrt_n; j++){
                 instances[i].points[j].is_marked = false;
             }
         }
 
         for(auto root : roots){
-            root->delete_tree();
-            delete root;
+            if(root != nullptr){
+                root->delete_tree();
+                delete root;
+            }
         }
+        roots.clear();
 
+        if(instances.size() == 0){
+            break;
+        }
     }
 
 
-
+    return {interval_l, interval_r};
 }
 
 
@@ -414,8 +516,13 @@ node<T>* c_sort<T>::create_bst(std::vector<c_point<T>> &pivots, int l, int r){
 
     int m = l + (r - l) / 2;
 
+    if (m >= pivots.size() || m < 0){
+        return nullptr;
+    }   
+
     node<T> *root = new node<T>;
     root->point = pivots[m];
+    root->index = m;
     root->left = create_bst(pivots, l, m - 1);
     root->right = create_bst(pivots, m + 1, r);
 
@@ -557,7 +664,7 @@ std::pair<T,bool> c_sort<T>::get_root(c_point<T> &a_point, c_point<T> &b_point, 
         T B = pow(b, 2);
         T C = pow(c, 2);
 
-        std::cout<<"a "<<a<<" b "<<b<<" c "<<c<<" k1 "<<k1<<" k2 "<<k2<<" A "<<A<<" B "<<B<<" C "<<C<<" "<<d1<<" "<<d2<<std::endl;
+        //std::cout<<"a "<<a<<" b "<<b<<" c "<<c<<" k1 "<<k1<<" k2 "<<k2<<" A "<<A<<" B "<<B<<" C "<<C<<" "<<d1<<" "<<d2<<std::endl;
         
         //quadratic equation
         T M = pow(A, 2) + pow(B, 2) - 2 * A * B;
@@ -612,6 +719,50 @@ std::pair<T,bool> c_sort<T>::get_root(c_point<T> &a_point, c_point<T> &b_point, 
     }else{
         //two envelope vertices in the same instance
         return {-2, false};
+    }
+}
+
+template< typename T>
+void c_sort<T>::move_comp( 
+    bool first,
+    Comparision<T> &comp,
+    std::vector<Comparision<T>> &comparisions, 
+    std::vector<Comparision<T>*> &active_comparisions,
+    std::vector<std::vector<std::vector<c_point<T>>>> &buckets, 
+    int instance_i, int x_or_y){
+
+    while(true){    
+        std::pair<bool, T> comp_res = resolve(comp.a, comp.b, x_or_y);
+
+        //std::cout<<"comp_res "<<comp_res.first<<" "<<comp_res.second<<std::endl;
+
+        if(comp_res.second == -1){
+            if((first && comp_res.first) || (!first && !comp_res.first)){
+                if(comp.c_node->right != nullptr){
+                    comp.b = comp.c_node->right->point;
+                    comp.c_node = comp.c_node->right;
+                    comp.weight /= 2;
+                }else{
+                    buckets[instance_i][comp.c_node->index].push_back(comp.a);
+                    break;
+                }
+            }else{
+                if(comp.c_node->left != nullptr){
+                    comp.b = comp.c_node->left->point;
+                    comp.c_node = comp.c_node->left;
+                    comp.weight /= 2;
+                }else{
+                    int index = comp.c_node->index - 1;
+                    index = index < 0 ? 0 : index;
+                    buckets[instance_i][index].push_back(comp.a);
+                    break;
+                }
+            }
+        }else{
+            comparisions.push_back(comp);
+            active_comparisions.push_back(&(comparisions.back()));
+            break;
+        }
     }
 }
 

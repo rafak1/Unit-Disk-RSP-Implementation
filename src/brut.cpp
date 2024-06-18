@@ -14,7 +14,7 @@ int main(){
     }
 
     brut<long double> brut;
-    long double res = brut.solve(points, s_i, t_i, lambda);
+    long double res = brut.solve(points, lambda, s_i, t_i);
 
     std::cout<<res<<std::endl;
 }

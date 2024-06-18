@@ -71,7 +71,7 @@ target_link_libraries( test_generator
         generator
 )
 
-add_executable(alg_1_solver src/generator.cpp)
+add_executable(alg_1_solver src/alg_1.cpp)
 
 target_link_libraries( alg_1_solver
     INTERFACE 
@@ -79,7 +79,7 @@ target_link_libraries( alg_1_solver
         grid
 )
 
-add_executable(alg_2_solver src/generator.cpp)
+add_executable(alg_2_solver src/alg_2.cpp)
 
 target_link_libraries( alg_2_solver
     INTERFACE 
@@ -87,7 +87,9 @@ target_link_libraries( alg_2_solver
         grid
 )
 
-add_executable(brut_solver src/generator.cpp)
+target_link_libraries(alg_2_solver PRIVATE CGAL::CGAL )
+
+add_executable(brut_solver src/brut.cpp)
 
 target_link_libraries( brut_solver
     INTERFACE 
