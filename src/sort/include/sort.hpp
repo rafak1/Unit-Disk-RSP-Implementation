@@ -123,40 +123,45 @@ std::pair<T,T> c_sort<T>::sort(
     int n = points.size();
     int sqrt_n = sqrt(n);
 
-
+    std::vector<Instnace<T>> instances;
+    instances.push_back(Instnace<T>{points, w});
 
     while(true){
-        std::vector<Comparision<T>> comparisions;
-        
-        T initial_weigth = w;
-
-        std::vector<c_point<T>> pivots;
-        
-        //randomly select sqrt(n) points
-        std::random_shuffle(points.begin(), points.end());
-        for(int i = 0; i < sqrt_n; i++){
-            points[i].is_marked = true;
-            pivots.push_back(points[i]);
-        }
-
-        //create comparisions for sorting the marked points
-        for(int i = 0; i < sqrt_n; i++){
-            for(int j = 0; j < sqrt_n; j++){
-                Comparision<T> comp;
-                comp.a = pivots[i];
-                comp.b = pivots[j];
-                comp.weight = initial_weigth;
-                comparisions.push_back(comp);
-            }
-        }
+        std::vector< std::vector<Comparision<T>> > comparisions;
         std::vector<Comparision<T>*> active_comparisions;
-        for(int i=0;i<comparisions.size();i++){
-            std::pair<bool, T> comp_res = resolve(comparisions[i].a, comparisions[i].b, x_or_y);
-            if(comp_res.second == -1){
-                comparisions[i].result = comp_res.first;
-            }else{
-                active_comparisions.push_back(&comparisions[i]);
+        
+        comparisions.resize(instances.size(), std::vector<Comparision<T>>());
+
+        int instance_i = 0;
+        for(auto &instance : instances){
+            std::vector<c_point<T>> pivots;
+            
+            //randomly select sqrt(n) points
+            std::random_shuffle(instance.points.begin(), instance.points.end());
+            for(int i = 0; i < sqrt_n; i++){
+                instance.points[i].is_marked = true;
+                pivots.push_back(instance.points[i]);
             }
+
+            //create comparisions for sorting the marked points
+            for(int i = 0; i < sqrt_n; i++){
+                for(int j = 0; j < sqrt_n; j++){
+                    Comparision<T> comp;
+                    comp.a = instance.pivots[i];
+                    comp.b = instance.pivots[j];
+                    comp.weight = instance.initial_weigth;
+                    comparisions[instance_i].push_back(comp);
+                }
+            }
+            for(int i=0;i<comparisions.size();i++){
+                std::pair<bool, T> comp_res = resolve(comparisions[instance_i][i].a, comparisions[instance_i][i].b, x_or_y);
+                if(comp_res.second == -1){
+                    comparisions[instance_i][i].result = comp_res.first;
+                }else{
+                    active_comparisions.push_back(&comparisions[instance_i][i]);
+                }
+            }
+            instance_i++;
         }
 
         //resolve the comparisions
@@ -218,34 +223,44 @@ std::pair<T,T> c_sort<T>::sort(
 
 
         //bubble sort but now with solved comparisions
-        for(int i = 0; i < sqrt_n; i++){
-            for(int j = 0; j < sqrt_n; j++){
-                int ind = i * sqrt_n + j;
-                if(comparisions[ind].result){
-                    std::swap(points[i], points[j]);
+        for(int inst = 0; inst < instances.size(); inst++){
+            for(int i = 0; i < sqrt_n; i++){
+                for(int j = 0; j < sqrt_n; j++){
+                    int ind = i * sqrt_n + j;
+                    if(comparisions[inst][ind].result){
+                        std::swap(instances[inst].points[i], instances[inst].points[j]);
+                    }
                 }
             }
         }
 
-        comparisions.clear();
+        for(int i=0;i<instances.size();i++){
+            comparisions.clear();
+        }
         active_comparisions.clear();
 
         //create a bst tree with the sorted points
-        node<T> *root = create_bst(points, 0, n - 1);
+        std::vector<node<T>*> roots;
+        for(auto instance : instances){
+            node<T> *root = create_bst(instance.points, 0, sqrt_n - 1);
+            roots.push_back(root);
+        }
 
         //route the rest of the points through the tree
-
-
-        for(int i = 0; i < points.size(); i++){
-            if(points[i].is_marked){
-                continue;
+        instance_i = 0;
+        for(auto instance& : instances){
+            for(int i = 0; i < points.size(); i++){
+                if(instance.points[i].is_marked){
+                    continue;
+                }
+                Comparision<T> comp;
+                comp.a = points[i];
+                comp.b = roots[instance_i]->point;
+                comp.weight = 0;//TODOTODO ??? ?????????????
+                comparisions.push_back(comp);
+                active_comparisions.push_back(&comparisions.back());
             }
-            Comparision<T> comp;
-            comp.a = points[i];
-            comp.b = root->point;
-            comp.weight = initial_weigth;
-            comparisions.push_back(comp);
-            active_comparisions.push_back(&comparisions.back());
+            instance_i++;
         }
         
         while(!active_comparisions.empty()){
@@ -310,7 +325,16 @@ std::pair<T,T> c_sort<T>::sort(
                 points[i].is_marked = false;
             }
         }
-        root->delete_tree();
+        for(int i = 0; i < instances.size(); i++){
+            for(int j = 0; j < sqrt_n; j++){
+                instances[i].points[j].is_marked = false;
+            }
+        }
+
+        for(auto root : roots){
+            root->delete_tree();
+            delete root;
+        }
 
     }
 
