@@ -90,7 +90,7 @@ T alg_2<T>::solve(std::vector<Point<T>> input_points, int lambda, int s_i, int t
     // build the grid, and shrink the interval accordingly
     build_grid(s_i, t_i, lambda);
 
-    this->grid.print();
+    //this->grid.print();
 
     Point<T> start = this->input_points[s_i];
     Point<T> end = this->input_points[t_i];
@@ -102,7 +102,7 @@ T alg_2<T>::solve(std::vector<Point<T>> input_points, int lambda, int s_i, int t
 
 template <typename T>
 void alg_2<T>::shrink(T new_l, T new_r){
-    std::cout<<"Shrinking: "<<interval_l<<" "<<interval_r<<" to "<<new_l<<" "<<new_r<<std::endl;
+    //std::cout<<"Shrinking: "<<interval_l<<" "<<interval_r<<" to "<<new_l<<" "<<new_r<<std::endl;
     if(new_l != -1)
         interval_l = std::max(interval_l, new_l);
 
@@ -135,17 +135,17 @@ T alg_2<T>::run_bfs(Point<T> &start, Point<T> &end, int lambda){
         pre_step(S, distance, end, i, step_cells);
 
         //do the actual step
-        std::cout<<"doing step "<<i<<"for r = "<<get_r()<<std::endl;
+        //std::cout<<"doing step "<<i<<"for r = "<<get_r()<<std::endl;
         bool res = this->my_cs.do_step(this->grid, S, distance, get_r(), end, i, step_cells, new_S);
         if(res || S.size() == 0){
             return interval_r;
         }
 
-        std::cout<<"S: ";
+        /*std::cout<<"S: ";
         for(int i = 0; i < S.size(); i++){
             std::cout<<S[i].x<<" "<<S[i].y<<" | ";
         }
-        std::cout<<std::endl;
+        std::cout<<std::endl;*/
     }
     return interval_r;
 }
@@ -174,12 +174,12 @@ void alg_2<T>::pre_step(std::vector<Point<T>> &S, std::vector<std::vector<int>>&
             }
         }
 
-        std::cout<<"calculating Q for cell "<<step_cells[i]<<std::endl;
+        //std::cout<<"calculating Q for cell "<<step_cells[i]<<std::endl;
 
         //calculate the Voronoi diagram of the points in C
         std::vector<Point_2> v_points;
         for(int i = 0; i < C_points.size(); i++){
-            std::cout<<"C_point: "<<C_points[i].x<<" "<<C_points[i].y<<std::endl;
+            //std::cout<<"C_point: "<<C_points[i].x<<" "<<C_points[i].y<<std::endl;
             Site_2 s = Site_2(Point_2(C_points[i].x, C_points[i].y));
         }
 
@@ -187,7 +187,7 @@ void alg_2<T>::pre_step(std::vector<Point<T>> &S, std::vector<std::vector<int>>&
 
         //for each vertex of the Voronoi diagram, calculate the distance to the closest point in C
         for(auto it = vd.vertices_begin(); it != vd.vertices_end(); it++){
-            std::cout<<"aaaaaaaaaaaa\n";
+            //std::cout<<"aaaaaaaaaaaa\n";
             Point_2 p = it->point();
 
             //closest point to p
@@ -195,7 +195,7 @@ void alg_2<T>::pre_step(std::vector<Point<T>> &S, std::vector<std::vector<int>>&
 
             T dist = sqrt(CGAL::squared_distance(p, p1));
             
-            std::cout<<"dist: "<<dist<<std::endl;
+            //std::cout<<"dist: "<<dist<<std::endl;
             Q.push_back(dist);
         }
 
@@ -205,9 +205,9 @@ void alg_2<T>::pre_step(std::vector<Point<T>> &S, std::vector<std::vector<int>>&
     if(Q.size()!= 0){
         std::sort(Q.begin(), Q.end());
     
-        for(int i = 0; i < Q.size(); i++){
+        /*for(int i = 0; i < Q.size(); i++){
             std::cout<<Q[i]<<" ";
-        }
+        }*/
 
         //find the smallest radius that is feasible using binsearch
         auto it = std::lower_bound(Q.begin(), Q.end(), true, [&](T r1, bool val){
@@ -230,7 +230,7 @@ void alg_2<T>::pre_step(std::vector<Point<T>> &S, std::vector<std::vector<int>>&
         shrink(res_l, res_r);
     }
 
-    std::cout<<"Result after envelope: "<<interval_l<<" "<<interval_r<<std::endl;
+    //std::cout<<"Result after envelope: "<<interval_l<<" "<<interval_r<<std::endl;
 
 
     // ------- Shrink the interval so that the enevlope stays the same -------
@@ -328,13 +328,13 @@ void alg_2<T>::pre_step(std::vector<Point<T>> &S, std::vector<std::vector<int>>&
     std::pair<T,T> res = my_c_sort.sort(points_to_sort, this->sorted_by_x, this->sorted_by_y, this->input_points, this->s_i, this->t_i, this->lambda, 0);
     shrink(res.first, res.second);
 
-    std::cout<<"Result after x sort: "<<interval_l<<" "<<interval_r<<std::endl;
+    //std::cout<<"Result after x sort: "<<interval_l<<" "<<interval_r<<std::endl;
 
     //TODO adapt the sort function to sort by y
     res = my_c_sort.sort(points_to_sort_by_y, this->sorted_by_x, this->sorted_by_y, this->input_points, this->s_i, this->t_i, this->lambda, 1);
     shrink(res.first, res.second);
 
-    std::cout<<"Result after y sort: "<<interval_l<<" "<<interval_r<<std::endl;
+    //std::cout<<"Result after y sort: "<<interval_l<<" "<<interval_r<<std::endl;
 
     // ------- Shrink the interval so that the S_{i+1} stays the same -------
 
@@ -416,7 +416,7 @@ void alg_2<T>::pre_step(std::vector<Point<T>> &S, std::vector<std::vector<int>>&
         shrink(res_l, res_r);
     }
 
-    std::cout<<"Result after S_{i+1}: "<<interval_l<<" "<<interval_r<<std::endl;
+    //std::cout<<"Result after S_{i+1}: "<<interval_l<<" "<<interval_r<<std::endl;
 }
 
 
@@ -567,7 +567,7 @@ void alg_2<T>::build_grid(int s_i, int t_i, int lambda){
     
     //std::cout<<"RESULT after y :"<<interval_l<<" "<<interval_r<<std::endl;
 
-    std::cout<<"building the grid for r = "<<get_r()<<std::endl;
+    //std::cout<<"building the grid for r = "<<get_r()<<std::endl;
     grid = Grid<T>(sorted_by_x, sorted_by_y, input_points, s, get_r());
 }
 

@@ -53,17 +53,6 @@ add_subdirectory(src/alg_1)
 add_subdirectory(src/brut)
 add_subdirectory(src/generator)
 
-add_executable(main src/main.cpp)
-
-target_link_libraries( main
-    INTERFACE 
-        grid
-        cs
-        alg_1
-        brut
-        generator
-)
-
 add_executable(test_generator src/generator.cpp)
 
 target_link_libraries( test_generator
@@ -96,7 +85,5 @@ target_link_libraries( brut_solver
         brut
         grid
 )
-
-target_link_libraries(main PRIVATE CGAL::CGAL )
 
 

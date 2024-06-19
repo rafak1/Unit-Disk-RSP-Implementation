@@ -50,15 +50,6 @@ add_subdirectory(grid)
 add_subdirectory(alg_1)
 add_subdirectory(brut)
 add_subdirectory(generator)
-add_executable(main main.cpp)
 
-target_link_libraries( main
-    INTERFACE 
-        grid
-        cs
-        alg_1
-        brut
-        generator
-)
 
 target_link_libraries(main PRIVATE CGAL::CGAL )

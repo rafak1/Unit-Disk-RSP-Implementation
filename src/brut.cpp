@@ -1,6 +1,7 @@
 #include "grid/include/point.hpp"
 #include "brut/include/brut.hpp"
 #include <iostream>
+#include <chrono>
 
 int main(){
     int n, lambda, s_i, t_i;
@@ -14,7 +15,12 @@ int main(){
     }
 
     brut<long double> brut;
-    long double res = brut.solve(points, lambda, s_i, t_i);
 
-    std::cout<<res<<std::endl;
+    auto t1 = std::chrono::high_resolution_clock::now();
+    long double res = brut.solve(points, lambda, s_i, t_i);
+    auto t2 = std::chrono::high_resolution_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>( t2 - t1 ).count();
+
+    std::cout<<"r^* = "<<res<<" ; calculated in "<<duration<<" ms"<<std::endl;
 }
