@@ -55,7 +55,7 @@ x_2 y_2
 x_n y_n
 ```
 In the first line four numbers separated by a white-space: $n$, $λ$, $s_i$, $t_i$, where $n$ is the number of
-points, and $λ$, $s_i$ and $t_i$ is defined as in the RSP. Than in next $n$ lines, there are pairs of floats.
+points, and $λ$, $s_i$ and $t_i$ is defined as in the RSP. Both indexes start at 0. Than in next $n$ lines, there are pairs of floats.
 The i-th line describes the coordinates of the i-th line
 
 ## Contributions
